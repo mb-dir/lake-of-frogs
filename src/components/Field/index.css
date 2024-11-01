@@ -1,0 +1,10 @@
+.field {
+	cursor: pointer;
+	display: block;
+	border: 1px solid #aaa;
+	height: 60px;
+	width: 60px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
