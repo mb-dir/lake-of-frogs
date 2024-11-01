@@ -1,4 +1,5 @@
 import Field from "../Field/Field";
+import Frog from "../Frog/Frog";
 import "./index.css";
 
 const Board = () => {
@@ -18,7 +19,27 @@ const Board = () => {
 			</div>
 		);
 	}
-	return <div className="board">{lake}</div>;
+	return (
+		<div className="container">
+			<div className="board">{lake}</div>
+			<div className="description">
+				<div className="legend">
+					<span>Legend</span>
+					<div className="next-to-container">
+						<Frog sex="male" />
+						<Frog sex="female" />
+					</div>
+				</div>
+				<div className="actions">
+					<span>Actions</span>
+					<div className="next-to-container">
+						<button>Jump</button>
+						<button>Reproduce</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	);
 };
 
 export default Board;
