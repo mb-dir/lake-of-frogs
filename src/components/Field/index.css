@@ -7,4 +7,15 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	position: relative;
+}
+
+.field__input {
+	z-index: 1;
+}
+
+.field__frog {
+	position: absolute !important;
+	top: 0;
+	left: 0;
 }

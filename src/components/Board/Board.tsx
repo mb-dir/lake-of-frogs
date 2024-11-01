@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Field from "../Field/Field";
 import Frog from "../Frog/Frog";
 import "./index.css";
@@ -7,11 +8,45 @@ const Board = () => {
 	const cols = 10;
 	const lake = [];
 
+	const [frogs, setFrogs] = useState([
+		{
+			sex: "male",
+			row: 0,
+			col: 0,
+		},
+		{
+			sex: "female",
+			row: 0,
+			col: 1,
+		},
+	]);
+
+	const [checkedIndexes, setCheckedIndexes] = useState<
+		{ col: number; row: number }[]
+	>([
+		{ col: 0, row: 0 },
+		{ col: 1, row: 0 },
+	]);
+
 	// Generate grid elements
 	for (let row = 0; row < rows; row++) {
 		const rowFields = [];
 		for (let col = 0; col < cols; col++) {
-			rowFields.push(<Field key={`${row}-${col}`} />);
+			const frog = frogs.find((el) => el.row === row && el.col === col);
+			const isChecked = checkedIndexes.some(
+				(el) => el.row === row && el.col === col
+			);
+
+			rowFields.push(
+				<Field
+					isChecked={isChecked}
+					col={col}
+					row={row}
+					frog={frog}
+					key={`${row}-${col}`}
+					setCheckedIndexes={setCheckedIndexes}
+				/>
+			);
 		}
 		lake.push(
 			<div key={row} className="board-row">
@@ -19,6 +54,7 @@ const Board = () => {
 			</div>
 		);
 	}
+
 	return (
 		<div className="container">
 			<div className="board">{lake}</div>
