@@ -41,6 +41,45 @@ const Board = () => {
 		return checkedFrogs.length === 1 && checkedIndexes.length === 2;
 	}
 
+	function canFrogsReproduce() {
+		const checkedFrogs = frogs.filter((frog) =>
+			checkedIndexes.some(
+				(cord) => frog.col === cord.col && frog.row === cord.row
+			)
+		);
+
+		if (checkedFrogs.length !== 2) {
+			return false;
+		}
+
+		const areFrogsDifferentSexes = checkedFrogs[0].sex !== checkedFrogs[1].sex;
+		let areFrogsAdjacent = false;
+
+		// Same column
+		if (checkedFrogs[0].col === checkedFrogs[1].col) {
+			if (Math.abs(checkedFrogs[0].row - checkedFrogs[1].row) === 1) {
+				areFrogsAdjacent = true;
+			}
+		}
+
+		// Same row
+		if (checkedFrogs[0].row === checkedFrogs[1].row) {
+			if (Math.abs(checkedFrogs[0].col - checkedFrogs[1].col) === 1) {
+				areFrogsAdjacent = true;
+			}
+		}
+
+		// Adjacent diagonally
+		if (
+			Math.abs(checkedFrogs[0].col - checkedFrogs[1].col) === 1 &&
+			Math.abs(checkedFrogs[0].row - checkedFrogs[1].row) === 1
+		) {
+			areFrogsAdjacent = true;
+		}
+
+		return areFrogsAdjacent && areFrogsDifferentSexes;
+	}
+
 	// Generate grid elements
 	for (let row = 0; row < rows; row++) {
 		const rowFields = [];
@@ -77,14 +116,14 @@ const Board = () => {
 			)
 		)[0];
 
-		const newIndexes = checkedIndexes.find(
+		const newFrogIndexes = checkedIndexes.find(
 			(cord) => !(frog.col === cord.col && frog.row === cord.row)
 		);
 
-		if (newIndexes) {
+		if (newFrogIndexes) {
 			const updatedFrogs = frogs.map((f) =>
 				f.col === frog.col && f.row === frog.row
-					? { ...f, col: newIndexes.col, row: newIndexes.row }
+					? { ...f, col: newFrogIndexes.col, row: newFrogIndexes.row }
 					: f
 			);
 			setFrogs(updatedFrogs);
@@ -109,7 +148,7 @@ const Board = () => {
 						<button disabled={!canFrogJump()} onClick={jump}>
 							Jump
 						</button>
-						<button>Reproduce</button>
+						<button disabled={!canFrogsReproduce()}>Reproduce</button>
 					</div>
 				</div>
 			</div>
