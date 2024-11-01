@@ -6,12 +6,14 @@ const Field = ({
 	isChecked,
 	col,
 	row,
+	isDisabled,
 	setCheckedIndexes,
 }: {
 	frog?: { sex: string };
 	isChecked: boolean;
 	col: number;
 	row: number;
+	isDisabled: boolean;
 	setCheckedIndexes: (newIndexes: { col: number; row: number }[]) => void;
 }) => {
 	function toggleFrog({ target }: React.ChangeEvent<HTMLInputElement>) {
@@ -31,6 +33,7 @@ const Field = ({
 				className="field__input"
 				onChange={toggleFrog}
 				checked={isChecked}
+				disabled={isDisabled}
 			/>
 			{frog && <Frog sex={frog.sex} className="field__frog" />}
 		</label>

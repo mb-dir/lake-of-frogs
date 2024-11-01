@@ -28,6 +28,8 @@ const Board = () => {
 		{ col: 1, row: 0 },
 	]);
 
+	const isTwoFieldsChecked = checkedIndexes.length > 1;
+
 	// Generate grid elements
 	for (let row = 0; row < rows; row++) {
 		const rowFields = [];
@@ -36,10 +38,12 @@ const Board = () => {
 			const isChecked = checkedIndexes.some(
 				(el) => el.row === row && el.col === col
 			);
+			const isDisabled = isTwoFieldsChecked && !isChecked;
 
 			rowFields.push(
 				<Field
 					isChecked={isChecked}
+					isDisabled={isDisabled}
 					col={col}
 					row={row}
 					frog={frog}
