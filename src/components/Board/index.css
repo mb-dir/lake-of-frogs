@@ -17,3 +17,9 @@
 	display: flex;
 	gap: 8px;
 }
+
+.description {
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+}

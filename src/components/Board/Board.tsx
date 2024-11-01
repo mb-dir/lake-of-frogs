@@ -7,17 +7,21 @@ const Board = () => {
 	const rows = 6;
 	const cols = 10;
 	const lake = [];
+	const weightCharacteristics = ["slim", "fat"];
+	const heightCharacteristics = ["tall", "short"];
 
 	const [frogs, setFrogs] = useState([
 		{
 			sex: "male",
 			row: 0,
 			col: 0,
+			characteristics: ["short", "slim"],
 		},
 		{
 			sex: "female",
 			row: 0,
 			col: 1,
+			characteristics: ["tall", "fat"],
 		},
 	]);
 
@@ -109,6 +113,39 @@ const Board = () => {
 		);
 	}
 
+	function getAvailableAdjacentPositions(frog) {
+		const directions = [
+			{ rowOffset: 0, colOffset: -1 }, // left
+			{ rowOffset: -1, colOffset: -1 }, // top-left
+			{ rowOffset: -1, colOffset: 0 }, // top
+			{ rowOffset: -1, colOffset: 1 }, // top-right
+			{ rowOffset: 0, colOffset: 1 }, // right
+			{ rowOffset: 1, colOffset: 1 }, // bottom-right
+			{ rowOffset: 1, colOffset: 0 }, // bottom
+			{ rowOffset: 1, colOffset: -1 }, // bottom-left
+		];
+
+		const availablePositions = [];
+
+		directions.forEach(({ rowOffset, colOffset }) => {
+			const newRow = frog.row + rowOffset;
+			const newCol = frog.col + colOffset;
+
+			if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols) {
+				const isOccupied = frogs.some(
+					(existingFrog) =>
+						existingFrog.row === newRow && existingFrog.col === newCol
+				);
+
+				if (!isOccupied) {
+					availablePositions.push({ row: newRow, col: newCol });
+				}
+			}
+		});
+
+		return availablePositions;
+	}
+
 	function jump() {
 		const frog = frogs.filter((frog) =>
 			checkedIndexes.find(
@@ -131,6 +168,44 @@ const Board = () => {
 		}
 	}
 
+	function reproduce() {
+		const checkedFrogs = frogs.filter((frog) =>
+			checkedIndexes.some(
+				(cord) => frog.col === cord.col && frog.row === cord.row
+			)
+		);
+		const randomNumber = Math.round(Math.random());
+		const fromWhomInheritHeight = checkedFrogs[randomNumber];
+		const fromWhomInheritWeight = checkedFrogs[1 - randomNumber];
+
+		const babyCharacteristics = [
+			fromWhomInheritHeight.characteristics.filter((char) =>
+				heightCharacteristics.includes(char)
+			)[0],
+			fromWhomInheritWeight.characteristics.filter((char) =>
+				weightCharacteristics.includes(char)
+			)[0],
+		];
+
+		const baby = {
+			characteristics: babyCharacteristics,
+			sex: randomNumber === 0 ? "male" : "female",
+		};
+
+		const mother = checkedFrogs.find((frog) => frog.sex === "female");
+
+		const availablePositions = getAvailableAdjacentPositions(mother);
+
+		if (availablePositions.length > 0) {
+			const newBabyPosition = availablePositions[0];
+			baby.row = newBabyPosition.row;
+			baby.col = newBabyPosition.col;
+
+			setFrogs([...frogs, baby]);
+			setCheckedIndexes([]);
+		}
+	}
+
 	return (
 		<div className="container">
 			<div className="board">{lake}</div>
@@ -148,8 +223,21 @@ const Board = () => {
 						<button disabled={!canFrogJump()} onClick={jump}>
 							Jump
 						</button>
-						<button disabled={!canFrogsReproduce()}>Reproduce</button>
+						<button disabled={!canFrogsReproduce()} onClick={reproduce}>
+							Reproduce
+						</button>
 					</div>
+				</div>
+
+				<div className="frogs">
+					<span>Frogs summary</span>
+					{(frogs || []).map((frog, index) => {
+						return (
+							<div key={index}>
+								Frog - {index}: [{frog.characteristics.join()}]
+							</div>
+						);
+					})}
 				</div>
 			</div>
 		</div>
