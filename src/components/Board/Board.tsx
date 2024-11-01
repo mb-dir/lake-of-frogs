@@ -30,6 +30,17 @@ const Board = () => {
 
 	const isTwoFieldsChecked = checkedIndexes.length > 1;
 
+	function canFrogJump() {
+		const checkedFrogs = frogs.filter((frog) =>
+			checkedIndexes.some(
+				(cord) => frog.col === cord.col && frog.row === cord.row
+			)
+		);
+
+		// We have only one forg checked and two checked fields - that means 2nd checked field is not a frog, so frog can jump there
+		return checkedFrogs.length === 1 && checkedIndexes.length === 2;
+	}
+
 	// Generate grid elements
 	for (let row = 0; row < rows; row++) {
 		const rowFields = [];
@@ -59,6 +70,28 @@ const Board = () => {
 		);
 	}
 
+	function jump() {
+		const frog = frogs.filter((frog) =>
+			checkedIndexes.find(
+				(cord) => frog.col === cord.col && frog.row === cord.row
+			)
+		)[0];
+
+		const newIndexes = checkedIndexes.find(
+			(cord) => !(frog.col === cord.col && frog.row === cord.row)
+		);
+
+		if (newIndexes) {
+			const updatedFrogs = frogs.map((f) =>
+				f.col === frog.col && f.row === frog.row
+					? { ...f, col: newIndexes.col, row: newIndexes.row }
+					: f
+			);
+			setFrogs(updatedFrogs);
+			setCheckedIndexes([]);
+		}
+	}
+
 	return (
 		<div className="container">
 			<div className="board">{lake}</div>
@@ -73,7 +106,9 @@ const Board = () => {
 				<div className="actions">
 					<span>Actions</span>
 					<div className="next-to-container">
-						<button>Jump</button>
+						<button disabled={!canFrogJump()} onClick={jump}>
+							Jump
+						</button>
 						<button>Reproduce</button>
 					</div>
 				</div>
