@@ -227,6 +227,8 @@ const Board = () => {
 
 			setFrogs([...frogs, baby]);
 			setCheckedIndexes([]);
+		} else {
+			alert("There is no space around frog mother");
 		}
 	}
 
