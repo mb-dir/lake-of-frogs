@@ -3,6 +3,9 @@
 	width: 60px;
 	position: relative;
 	background-color: green;
+	display: flex;
+	justify-content: center;
+	align-items: end;
 }
 
 .frog__sex {
@@ -19,11 +22,10 @@
 }
 
 .frog__sex--female {
-	background-color: red;
+	background-color: purple;
 }
 
 .frog__name {
-	position: absolute;
 	bottom: 0;
 	color: white;
 }

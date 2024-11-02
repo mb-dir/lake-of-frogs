@@ -1,25 +1,66 @@
 .container {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
+	align-items: start;
+	gap: 48px;
 }
 
 .board {
 	display: flex;
 	flex-direction: column;
-	gap: 2px;
+	align-items: center;
+	gap: 4px;
+	padding: 16px;
+	border: 2px solid #cde5f9;
+	background-color: #cde5f9;
+	border-radius: 5px;
 }
 
 .board-row {
 	display: flex;
+	gap: 4px;
 }
 
 .next-to-container {
 	display: flex;
-	gap: 8px;
+	gap: 12px;
+	text-align: center;
 }
 
 .description {
-	display: flex;
-	flex-direction: column;
-	gap: 24px;
+	padding: 20px;
+	border: 1px solid #ccc;
+	border-radius: 10px;
+	background-color: #f4f4f9;
+}
+
+.legend,
+.actions,
+.frogs {
+	margin-bottom: 20px;
+}
+
+.legend span,
+.actions span,
+.frogs span {
+	font-weight: bold;
+	font-size: 18px;
+	margin-bottom: 10px;
+	display: block;
+}
+
+button {
+	padding: 8px 16px;
+	font-size: 14px;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	background-color: #007bff;
+	color: white;
+	transition: background-color 0.3s;
+}
+
+button:disabled {
+	background-color: #b0c4de;
+	cursor: not-allowed;
 }

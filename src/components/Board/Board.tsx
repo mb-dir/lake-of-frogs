@@ -233,7 +233,10 @@ const Board = () => {
 
 	return (
 		<div className="container">
-			<div className="board">{lake}</div>
+			<div className="board">
+				<h2>Lake</h2>
+				{lake}
+			</div>
 			<div className="description">
 				<div className="legend">
 					<span>Legend</span>
@@ -279,7 +282,10 @@ const Board = () => {
 				</div>
 
 				<div className="frogs">
-					<span>Frogs summary</span>
+					<span>
+						Frogs summary - extra section in order to visualize reproduction
+						process
+					</span>
 					{(frogs || []).map((frog, index) => {
 						return (
 							<div key={index}>
