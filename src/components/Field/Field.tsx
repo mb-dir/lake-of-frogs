@@ -1,5 +1,6 @@
 import "./index.css";
 import Frog from "../Frog/Frog";
+import { frogType } from "../../types";
 
 const Field = ({
 	frog,
@@ -9,12 +10,14 @@ const Field = ({
 	isDisabled,
 	setCheckedIndexes,
 }: {
-	frog?: { sex: string };
+	frog?: frogType;
 	isChecked: boolean;
 	col: number;
 	row: number;
 	isDisabled: boolean;
-	setCheckedIndexes: (newIndexes: { col: number; row: number }[]) => void;
+	setCheckedIndexes: React.Dispatch<
+		React.SetStateAction<{ col: number; row: number }[]>
+	>;
 }) => {
 	function toggleFrog({ target }: React.ChangeEvent<HTMLInputElement>) {
 		if (target.checked) {
@@ -35,7 +38,7 @@ const Field = ({
 				checked={isChecked}
 				disabled={isDisabled}
 			/>
-			{frog && <Frog sex={frog.sex} className="field__frog" />}
+			{frog && <Frog frog={frog} className="field__frog" />}
 		</label>
 	);
 };

@@ -21,3 +21,9 @@
 .frog__sex--female {
 	background-color: red;
 }
+
+.frog__name {
+	position: absolute;
+	bottom: 0;
+	color: white;
+}

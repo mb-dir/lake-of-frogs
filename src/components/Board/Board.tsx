@@ -2,6 +2,7 @@ import { useState } from "react";
 import Field from "../Field/Field";
 import Frog from "../Frog/Frog";
 import "./index.css";
+import { frogType } from "../../types";
 
 const Board = () => {
 	const rows = 6;
@@ -10,18 +11,22 @@ const Board = () => {
 	const weightCharacteristics = ["slim", "fat"];
 	const heightCharacteristics = ["tall", "short"];
 
-	const [frogs, setFrogs] = useState([
+	const [frogs, setFrogs] = useState<frogType[]>([
 		{
 			sex: "male",
 			row: 0,
 			col: 0,
 			characteristics: ["short", "slim"],
+			name: "frog 0",
+			parents: [],
 		},
 		{
 			sex: "female",
 			row: 0,
 			col: 1,
 			characteristics: ["tall", "fat"],
+			name: "frog 1",
+			parents: [],
 		},
 	]);
 
@@ -34,14 +39,14 @@ const Board = () => {
 
 	const isTwoFieldsChecked = checkedIndexes.length > 1;
 
-	function canFrogJump() {
-		const checkedFrogs = frogs.filter((frog) =>
-			checkedIndexes.some(
-				(cord) => frog.col === cord.col && frog.row === cord.row
-			)
-		);
+	const checkedFrogs = frogs.filter((frog) =>
+		checkedIndexes.some(
+			(cord) => frog.col === cord.col && frog.row === cord.row
+		)
+	);
+	const checkedFrog = checkedFrogs[0];
 
-		const checkedFrog = checkedFrogs[0];
+	function canFrogJump() {
 		const fieldToJump = checkedIndexes.find(
 			(el) => el.col !== checkedFrog?.col || el.row !== checkedFrog?.row
 		);
@@ -64,18 +69,10 @@ const Board = () => {
 				? distance === 2 || distance === 4
 				: distance === 3 || distance === 6;
 
-		console.log(distance);
-
 		return distanceCondition && checkedFieldsCondition;
 	}
 
 	function canFrogsReproduce() {
-		const checkedFrogs = frogs.filter((frog) =>
-			checkedIndexes.some(
-				(cord) => frog.col === cord.col && frog.row === cord.row
-			)
-		);
-
 		if (checkedFrogs.length !== 2) {
 			return false;
 		}
@@ -137,7 +134,7 @@ const Board = () => {
 		);
 	}
 
-	function getAvailableAdjacentPositions(frog) {
+	function getAvailableAdjacentPositions(frog: frogType) {
 		const directions = [
 			{ rowOffset: 0, colOffset: -1 }, // left
 			{ rowOffset: -1, colOffset: -1 }, // top-left
@@ -149,7 +146,9 @@ const Board = () => {
 			{ rowOffset: 1, colOffset: -1 }, // bottom-left
 		];
 
-		const availablePositions = [];
+		const availablePositions: { row: number; col: number }[] = [];
+
+		if (!frog) return availablePositions;
 
 		directions.forEach(({ rowOffset, colOffset }) => {
 			const newRow = frog.row + rowOffset;
@@ -193,11 +192,6 @@ const Board = () => {
 	}
 
 	function reproduce() {
-		const checkedFrogs = frogs.filter((frog) =>
-			checkedIndexes.some(
-				(cord) => frog.col === cord.col && frog.row === cord.row
-			)
-		);
 		const randomNumber = Math.round(Math.random());
 		const fromWhomInheritHeight = checkedFrogs[randomNumber];
 		const fromWhomInheritWeight = checkedFrogs[1 - randomNumber];
@@ -211,19 +205,24 @@ const Board = () => {
 			)[0],
 		];
 
-		const baby = {
+		const baby: frogType = {
 			characteristics: babyCharacteristics,
 			sex: randomNumber === 0 ? "male" : "female",
+			col: 0,
+			row: 0,
+			name: "",
+			parents: [fromWhomInheritHeight.name, fromWhomInheritWeight.name],
 		};
 
 		const mother = checkedFrogs.find((frog) => frog.sex === "female");
 
-		const availablePositions = getAvailableAdjacentPositions(mother);
+		const availablePositions = getAvailableAdjacentPositions(mother!);
 
 		if (availablePositions.length > 0) {
 			const newBabyPosition = availablePositions[0];
 			baby.row = newBabyPosition.row;
 			baby.col = newBabyPosition.col;
+			baby.name = `frog ${frogs.length}`;
 
 			setFrogs([...frogs, baby]);
 			setCheckedIndexes([]);
@@ -239,8 +238,32 @@ const Board = () => {
 				<div className="legend">
 					<span>Legend</span>
 					<div className="next-to-container">
-						<Frog sex="male" />
-						<Frog sex="female" />
+						<div>
+							<Frog
+								frog={{
+									col: 0,
+									row: 0,
+									characteristics: [],
+									parents: [],
+									name: "",
+									sex: "male",
+								}}
+							/>
+							<span>male</span>
+						</div>
+						<div>
+							<Frog
+								frog={{
+									col: 0,
+									row: 0,
+									characteristics: [],
+									parents: [],
+									name: "",
+									sex: "female",
+								}}
+							/>
+							<span>female</span>
+						</div>
 					</div>
 				</div>
 				<div className="actions">
@@ -260,7 +283,8 @@ const Board = () => {
 					{(frogs || []).map((frog, index) => {
 						return (
 							<div key={index}>
-								Frog - {index}: [{frog.characteristics.join()}]
+								{frog.name}: [{frog.characteristics.join()}] - parents: [
+								{frog.parents.join()}]
 							</div>
 						);
 					})}
