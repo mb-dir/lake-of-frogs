@@ -41,8 +41,32 @@ const Board = () => {
 			)
 		);
 
+		const checkedFrog = checkedFrogs[0];
+		const fieldToJump = checkedIndexes.find(
+			(el) => el.col !== checkedFrog?.col || el.row !== checkedFrog?.row
+		);
+
+		let distance = null;
+
+		if (checkedFrog && fieldToJump) {
+			// https://xlinux.nist.gov/dads/HTML/manhattanDistance.html
+			distance =
+				Math.abs(checkedFrog.col - fieldToJump.col) +
+				Math.abs(checkedFrog.row - fieldToJump.row);
+		}
+
 		// We have only one forg checked and two checked fields - that means 2nd checked field is not a frog, so frog can jump there
-		return checkedFrogs.length === 1 && checkedIndexes.length === 2;
+		const checkedFieldsCondition =
+			checkedFrogs.length === 1 && checkedIndexes.length === 2;
+
+		const distanceCondition =
+			checkedFrog?.sex === "female"
+				? distance === 2 || distance === 4
+				: distance === 3 || distance === 6;
+
+		console.log(distance);
+
+		return distanceCondition && checkedFieldsCondition;
 	}
 
 	function canFrogsReproduce() {
