@@ -65,11 +65,11 @@ const Board = () => {
 			checkedFrogs.length === 1 && checkedIndexes.length === 2;
 
 		function checkDistanceCondition(
-			frog: frogType,
+			frog: frogType | null,
 			distanceCol: number,
 			distanceRow: number
 		) {
-			if (frog.sex === "female") {
+			if (frog?.sex === "female") {
 				if (
 					Math.abs(distanceCol - distanceRow) === 2 &&
 					(distanceCol === 0 || distanceRow === 0)
@@ -80,7 +80,7 @@ const Board = () => {
 				if (distanceCol === distanceRow && distanceCol + distanceRow === 4) {
 					return true;
 				}
-			} else {
+			} else if (frog?.sex === "male") {
 				if (
 					Math.abs(distanceCol - distanceRow) === 3 &&
 					(distanceCol === 0 || distanceRow === 0)
