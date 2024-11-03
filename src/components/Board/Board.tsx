@@ -51,23 +51,56 @@ const Board = () => {
 			(el) => el.col !== checkedFrog?.col || el.row !== checkedFrog?.row
 		);
 
-		let distance = null;
+		let distanceRow = 0;
+		let distanceCol = 0;
 
 		if (checkedFrog && fieldToJump) {
 			// https://xlinux.nist.gov/dads/HTML/manhattanDistance.html
-			distance =
-				Math.abs(checkedFrog.col - fieldToJump.col) +
-				Math.abs(checkedFrog.row - fieldToJump.row);
+			distanceCol = Math.abs(checkedFrog.col - fieldToJump.col);
+			distanceRow = Math.abs(checkedFrog.row - fieldToJump.row);
 		}
 
 		// We have only one forg checked and two checked fields - that means 2nd checked field is not a frog, so frog can jump there
 		const checkedFieldsCondition =
 			checkedFrogs.length === 1 && checkedIndexes.length === 2;
 
-		const distanceCondition =
-			checkedFrog?.sex === "female"
-				? distance === 2 || distance === 4
-				: distance === 3 || distance === 6;
+		function checkDistanceCondition(
+			frog: frogType,
+			distanceCol: number,
+			distanceRow: number
+		) {
+			if (frog.sex === "female") {
+				if (
+					Math.abs(distanceCol - distanceRow) === 2 &&
+					(distanceCol === 0 || distanceRow === 0)
+				) {
+					return true;
+				}
+
+				if (distanceCol === distanceRow && distanceCol + distanceRow === 4) {
+					return true;
+				}
+			} else {
+				if (
+					Math.abs(distanceCol - distanceRow) === 3 &&
+					(distanceCol === 0 || distanceRow === 0)
+				) {
+					return true;
+				}
+
+				if (distanceCol === distanceRow && distanceCol + distanceRow === 6) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		const distanceCondition = checkDistanceCondition(
+			checkedFrog,
+			distanceCol,
+			distanceRow
+		);
 
 		return distanceCondition && checkedFieldsCondition;
 	}
