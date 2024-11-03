@@ -11,6 +11,7 @@ const Board = () => {
 	const weightCharacteristics = ["slim", "fat"];
 	const heightCharacteristics = ["tall", "short"];
 
+	// Insteaed of one state for board fields there are two smaller states for checked fields and frogs - turned out to be bit more complex
 	const [frogs, setFrogs] = useState<frogType[]>([
 		{
 			sex: "male",
@@ -37,13 +38,16 @@ const Board = () => {
 		{ col: 1, row: 0 },
 	]);
 
-	const isTwoFieldsChecked = checkedIndexes.length > 1;
+	const areTwoFieldsChecked = checkedIndexes.length > 1;
 
+	// Get all frogs which are on currently checked fields
 	const checkedFrogs = frogs.filter((frog) =>
 		checkedIndexes.some(
 			(cord) => frog.col === cord.col && frog.row === cord.row
 		)
 	);
+
+	// Get first frog
 	const checkedFrog = checkedFrogs[0];
 
 	function canFrogJump() {
@@ -70,6 +74,7 @@ const Board = () => {
 			distanceRow: number
 		) {
 			if (frog?.sex === "female") {
+				// Condition for straight jump
 				if (
 					Math.abs(distanceCol - distanceRow) === 2 &&
 					(distanceCol === 0 || distanceRow === 0)
@@ -77,10 +82,12 @@ const Board = () => {
 					return true;
 				}
 
+				// Condition for diagonal jump
 				if (distanceCol === distanceRow && distanceCol + distanceRow === 4) {
 					return true;
 				}
 			} else if (frog?.sex === "male") {
+				// Condition for straight jump
 				if (
 					Math.abs(distanceCol - distanceRow) === 3 &&
 					(distanceCol === 0 || distanceRow === 0)
@@ -88,6 +95,7 @@ const Board = () => {
 					return true;
 				}
 
+				// Condition for diagonal jump
 				if (distanceCol === distanceRow && distanceCol + distanceRow === 6) {
 					return true;
 				}
@@ -106,6 +114,7 @@ const Board = () => {
 	}
 
 	function canFrogsReproduce() {
+		// Two frogs must be checked
 		if (checkedFrogs.length !== 2) {
 			return false;
 		}
@@ -136,35 +145,6 @@ const Board = () => {
 		}
 
 		return areFrogsAdjacent && areFrogsDifferentSexes;
-	}
-
-	// Generate grid elements
-	for (let row = 0; row < rows; row++) {
-		const rowFields = [];
-		for (let col = 0; col < cols; col++) {
-			const frog = frogs.find((el) => el.row === row && el.col === col);
-			const isChecked = checkedIndexes.some(
-				(el) => el.row === row && el.col === col
-			);
-			const isDisabled = isTwoFieldsChecked && !isChecked;
-
-			rowFields.push(
-				<Field
-					isChecked={isChecked}
-					isDisabled={isDisabled}
-					col={col}
-					row={row}
-					frog={frog}
-					key={`${row}-${col}`}
-					setCheckedIndexes={setCheckedIndexes}
-				/>
-			);
-		}
-		lake.push(
-			<div key={row} className="board-row">
-				{rowFields}
-			</div>
-		);
 	}
 
 	function getAvailableAdjacentPositions(frog: frogType) {
@@ -203,21 +183,17 @@ const Board = () => {
 	}
 
 	function jump() {
-		const frog = frogs.filter((frog) =>
-			checkedIndexes.find(
-				(cord) => frog.col === cord.col && frog.row === cord.row
-			)
-		)[0];
-
+		// Find chekced field without frog on it
 		const newFrogIndexes = checkedIndexes.find(
-			(cord) => !(frog.col === cord.col && frog.row === cord.row)
+			(cord) => !(checkedFrog.col === cord.col && checkedFrog.row === cord.row)
 		);
 
 		if (newFrogIndexes) {
-			const updatedFrogs = frogs.map((f) =>
-				f.col === frog.col && f.row === frog.row
-					? { ...f, col: newFrogIndexes.col, row: newFrogIndexes.row }
-					: f
+			// Change frog's coordinates
+			const updatedFrogs = frogs.map((frog) =>
+				frog.col === checkedFrog.col && frog.row === checkedFrog.row
+					? { ...frog, col: newFrogIndexes.col, row: newFrogIndexes.row }
+					: frog
 			);
 			setFrogs(updatedFrogs);
 			setCheckedIndexes([]);
@@ -225,6 +201,7 @@ const Board = () => {
 	}
 
 	function reproduce() {
+		// Define which characteristic should be inherited from mother/father
 		const randomNumber = Math.round(Math.random());
 		const fromWhomInheritHeight = checkedFrogs[randomNumber];
 		const fromWhomInheritWeight = checkedFrogs[1 - randomNumber];
@@ -249,19 +226,50 @@ const Board = () => {
 
 		const mother = checkedFrogs.find((frog) => frog.sex === "female");
 
+		// Where child should be placed
 		const availablePositions = getAvailableAdjacentPositions(mother!);
 
 		if (availablePositions.length > 0) {
+			// Placed new frog on the first available position
 			const newBabyPosition = availablePositions[0];
 			baby.row = newBabyPosition.row;
 			baby.col = newBabyPosition.col;
 			baby.name = `frog ${frogs.length}`;
 
-			setFrogs([...frogs, baby]);
+			setFrogs((prev) => [...prev, baby]);
 			setCheckedIndexes([]);
 		} else {
 			alert("There is no space around frog mother");
 		}
+	}
+
+	// Generate grid elements
+	for (let row = 0; row < rows; row++) {
+		const rowFields = [];
+		for (let col = 0; col < cols; col++) {
+			const frog = frogs.find((el) => el.row === row && el.col === col);
+			const isChecked = checkedIndexes.some(
+				(el) => el.row === row && el.col === col
+			);
+			const isDisabled = areTwoFieldsChecked && !isChecked;
+
+			rowFields.push(
+				<Field
+					isChecked={isChecked}
+					isDisabled={isDisabled}
+					col={col}
+					row={row}
+					frog={frog}
+					key={`${row}-${col}`}
+					setCheckedIndexes={setCheckedIndexes}
+				/>
+			);
+		}
+		lake.push(
+			<div key={row} className="board-row">
+				{rowFields}
+			</div>
+		);
 	}
 
 	return (
